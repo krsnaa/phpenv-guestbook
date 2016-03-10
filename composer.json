@@ -9,6 +9,11 @@
             "email": "krsnaa@gmail.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "SitePoint\\": "src"
+        }
+    },
     "require": {
         "catfan/medoo": "^1.0"
     },
