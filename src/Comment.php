@@ -96,7 +96,7 @@ class Comment
     {
         if ($this->getName() && $this->getEmail() && $this->getComment()) {
             $this->setSubmissionDate(date('Y-m-d H:i:s'));
-            dump($this);
+            #dump($this);
 
             return $this->database->insert('comments', [
                 'name' => $this->getName(),

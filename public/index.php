@@ -6,6 +6,7 @@
  * Time: 3:59 PM
  */
 
+use Particle\Validator\Validator;
 require_once '../vendor/autoload.php';
 
 $file = '../storage/database.db';
@@ -18,12 +19,33 @@ $database = new medoo([
 ]);
 
 $comment = new SitePoint\Comment($database);
-$comment->setEmail('bruno@skvorc.me')
-    ->setName('Bruno Skvorc')
-    ->setComment('Hooray! Saving comments works!')
-    ->save();
 
-dump($database->error());
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $v = new Validator();
+    $v->required('name')->lengthBetween(1, 100)->alnum(true);
+    $v->required('email')->email()->lengthBetween(5, 255);
+    $v->required('comment')->lengthBetween(10, null);
+
+    $result = $v->validate($_POST);
+
+    if ($result->isValid()) {
+        try {
+            $comment
+                ->setName($_POST['name'])
+                ->setEmail($_POST['email'])
+                ->setComment($_POST['comment'])
+                ->save();
+
+            header('Location: /');
+            return;
+
+        } catch (\Exception $e) {
+            die($e->getMessage());
+        }
+    } else {
+        dump($result->getMessages());
+    }
+}
 ?>
 
 <!doctype html>
@@ -40,6 +62,7 @@ dump($database->error());
 
     <link rel="stylesheet" href="css/normalize.css">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/custom.css">
     <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 </head>
 <body>
@@ -48,6 +71,17 @@ dump($database->error());
 <![endif]-->
 
 <!-- Add your site or application content here -->
+
+<?php foreach ($comment->findAll() as $comment) : ?>
+
+    <div class="comment">
+        <h3>On <?= $comment->getSubmissionDate() ?>, <?= $comment->getName() ?> wrote:</h3>
+
+        <p><?= $comment->getComment(); ?></p>
+    </div>
+
+<?php endforeach; ?>
+
 <form method="post">
     <label>Name: <input type="text" name="name" placeholder="Your name"></label>
     <label>Email: <input type="text" name="email" placeholder="name@domain.com"></label>
