@@ -38,7 +38,7 @@ $database = new medoo([
 <!-- Add your site or application content here -->
 <form method="post">
     <label>Name: <input type="text" name="name" placeholder="Your name"></label>
-    <label>Email: <input type="text" name="email" placeholder="your@email.com"></label>
+    <label>Email: <input type="text" name="email" placeholder="name@domain.com"></label>
     <label>Comment: <textarea name="comment" cols="30" rows="10"></textarea></label>
     <input type="submit" value="Save">
 </form>
